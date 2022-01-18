@@ -1,0 +1,102 @@
+site_name: Shreekantha Nadig
+site_url: https://vak.ai
+site_author: Shreekantha Nadig
+site_description: >-
+  Sharing ideas and progress on Speech and Language Technology
+
+# Repository
+# repo_name: squidfunk/mkdocs-material
+# repo_url: https://github.com/squidfunk/mkdocs-material
+# edit_uri: ""
+
+# Copyright
+copyright: Copyright &copy; 2022 - 2028 Shreekantha A Nadig
+
+# Configuration
+theme:
+  name: material  
+  # Static files
+  static_templates:
+    - 404.html
+
+  # Default values, taken from mkdocs_theme.yml
+  language: en
+  features:
+    - content.code.annotate
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.annotate
+  palette:
+    - scheme: default
+      primary: black
+      accent: red
+      toggle:
+        icon: material/lightbulb-outline
+        name: Switch to dark mode
+    - scheme: slate 
+      primary: blue
+      accent: red
+      toggle:
+        icon: material/lightbulb
+        name: Switch to light mode
+  font:
+    text: Roboto
+    code: Roboto Mono
+extra:
+  social:
+    - icon: fontawesome/brands/twitter 
+      link: https://twitter.com/sk_nadig
+      name: sk_nadig on Twitter
+    - icon: fontawesome/brands/github
+      link: https://github.com/sknadig
+      name: sknadig on GitHub
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/sknadig
+      name: sknadig on LinkedIn
+    - icon: fontawesome/brands/youtube
+      link: https://www.youtube.com/channel/UCEgoO86BAuL-5FFY01K1N-A
+      name: Shree Nadig on YouTube
+plugins:
+  - search:
+      lang: en
+
+# Page tree
+nav:
+  - Home: index.md
+  - Work: work.md
+  - Blog:
+    - blog/index.md
+    - 2019:
+      - Tensorflow 2.0 tf.data.Dataset.from_generator: blog/2019/tensorflow-dataset.md
+      - Attention models in ESPnet toolkit for Speech Recognition: blog/2019/attention.md
+      - Introduction to attention models for speech recognition: blog/2019/basics-attention.md
+      - Encoder-Decoder framework for Speech Recognition: blog/2019/encoder-decoder-basics.md
+  - Publications: publications.md
+  - Recognition: recognition.md
+  - CV: ./assets/pdf/ShreekanthaNadig.pdf
+      
+
+markdown_extensions:
+  - meta
+  - md_in_html
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.highlight:
+      auto_title: true
+      anchor_linenums: true
+      linenums: true
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
