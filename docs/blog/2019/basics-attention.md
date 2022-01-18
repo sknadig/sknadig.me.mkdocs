@@ -1,6 +1,6 @@
 # Introduction to attention models for speech recognition
 
-In the [previous post]({% post_url 2019-01-01-encoder-decoder-basics%}) we discussed the Encoder-Decoder framework for Speech Recognition.
+In the previous post we discussed the Encoder-Decoder framework for Speech Recognition.
 
 **So, why do we need Attention? What's wrong with the Encoder-Decoder framework?**
 
@@ -244,4 +244,4 @@ To overcome this issue, we project each of these vectors to a fixed dimension an
 <img src="../../../assets/posts/att_basics/dim_match.png" alt="Matching the dimensions" width="800">
 </center>
 
-In the [next post]({% post_url 2019-01-10-attention%}) we will discuss about the different Attention models available in the [ESPnet](https://github.com/espnet/espnet) toolkit.
+In the next post we will discuss about the different Attention models available in the [ESPnet](https://github.com/espnet/espnet) toolkit.

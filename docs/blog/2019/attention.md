@@ -6,7 +6,7 @@ TL;DR - Different attention mechanisms available in the ESPnet toolkit explained
 I'll directly jump to explaining the different Attention models available in the [ESPnet](https://github.com/espnet/espnet) toolkit.
 (I won't be going into the implementation challenges in getting the Encoder-Decoer Attention models work.)
 
-Please have a look at the [previous post]({% post_url 2019-01-02-basics-attention%}) for the basics of Attention models in Speech recognition. This post assumes you know the Attention mechanism in general and build from there.
+Please have a look at the previous post for the basics of Attention models in Speech recognition. This post assumes you know the Attention mechanism in general and build from there.
 
 - No Attention
 - Content-based Attention
