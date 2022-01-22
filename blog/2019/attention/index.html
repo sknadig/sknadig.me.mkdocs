@@ -1,0 +1,986 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Sharing ideas and progress on Speech and Language Technology">
+      
+      
+        <meta name="author" content="Shreekantha Nadig">
+      
+      
+        <link rel="canonical" href="https://vak.ai/blog/2019/attention/">
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.7">
+    
+    
+      
+        <title>Attention models in ESPnet toolkit for Speech Recognition - Shreekantha Nadig</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.cd566b2a.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.e6a45f82.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="red">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#attention-models-in-espnet-toolkit-for-speech-recognition" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Shreekantha Nadig" class="md-header__button md-logo" aria-label="Shreekantha Nadig" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Shreekantha Nadig
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Attention models in ESPnet toolkit for Speech Recognition
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="red"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5z"/></svg>
+            </label>
+          
+        
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="red"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9v1z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7 0-.24-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91 1.61 0 2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08z"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../../.." class="md-tabs__link">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../../../work/" class="md-tabs__link">
+      Work
+    </a>
+  </li>
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../" class="md-tabs__link md-tabs__link--active">
+        Blog
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../../../publications/" class="md-tabs__link">
+      Publications
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../../../recognition/" class="md-tabs__link">
+      Recognition
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../../../assets/pdf/ShreekanthaNadig.pdf" class="md-tabs__link">
+      CV
+    </a>
+  </li>
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Shreekantha Nadig" class="md-nav__button md-logo" aria-label="Shreekantha Nadig" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    Shreekantha Nadig
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../work/" class="md-nav__link">
+        Work
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Blog
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Blog" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Blog
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        Blog
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2" type="checkbox" id="__nav_3_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_2">
+          2019
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="2019" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_2">
+          <span class="md-nav__icon md-icon"></span>
+          2019
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tensorflow-dataset/" class="md-nav__link">
+        Tensorflow 2.0 tf.data.Dataset.from_generator
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Attention models in ESPnet toolkit for Speech Recognition
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Attention models in ESPnet toolkit for Speech Recognition
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#attention-recap" class="md-nav__link">
+    Attention - Recap
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#types-of-attention" class="md-nav__link">
+    Types of Attention
+  </a>
+  
+    <nav class="md-nav" aria-label="Types of Attention">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#no-attention-equal-attention" class="md-nav__link">
+    No Attention (Equal Attention?)
+  </a>
+  
+    <nav class="md-nav" aria-label="No Attention (Equal Attention?)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#no-attention-code" class="md-nav__link">
+    No attention - code
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-attention-full-picture" class="md-nav__link">
+    No attention - full picture
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#content-based-attention" class="md-nav__link">
+    Content-based Attention
+  </a>
+  
+    <nav class="md-nav" aria-label="Content-based Attention">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#2-dot-product-attention" class="md-nav__link">
+    2. Dot product Attention
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dot-product-attention-code" class="md-nav__link">
+    Dot product attention - code
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dot-product-attention-full-picture" class="md-nav__link">
+    Dot product attention - full picture
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basics-attention/" class="md-nav__link">
+        Introduction to attention models for speech recognition
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../encoder-decoder-basics/" class="md-nav__link">
+        Encoder-Decoder framework for Speech Recognition
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../publications/" class="md-nav__link">
+        Publications
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../recognition/" class="md-nav__link">
+        Recognition
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../assets/pdf/ShreekanthaNadig.pdf" class="md-nav__link">
+        CV
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#attention-recap" class="md-nav__link">
+    Attention - Recap
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#types-of-attention" class="md-nav__link">
+    Types of Attention
+  </a>
+  
+    <nav class="md-nav" aria-label="Types of Attention">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#no-attention-equal-attention" class="md-nav__link">
+    No Attention (Equal Attention?)
+  </a>
+  
+    <nav class="md-nav" aria-label="No Attention (Equal Attention?)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#no-attention-code" class="md-nav__link">
+    No attention - code
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-attention-full-picture" class="md-nav__link">
+    No attention - full picture
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#content-based-attention" class="md-nav__link">
+    Content-based Attention
+  </a>
+  
+    <nav class="md-nav" aria-label="Content-based Attention">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#2-dot-product-attention" class="md-nav__link">
+    2. Dot product Attention
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dot-product-attention-code" class="md-nav__link">
+    Dot product attention - code
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dot-product-attention-full-picture" class="md-nav__link">
+    Dot product attention - full picture
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+
+<h1 id="attention-models-in-espnet-toolkit-for-speech-recognition">Attention models in ESPnet toolkit for Speech Recognition</h1>
+<p>TL;DR - Different attention mechanisms available in the ESPnet toolkit explained. Have a look at the presentation that I gave in IIIT-B AI reading group (no math included) <a href="https://github.com/sknadig/attention_presentation/raw/master/Final.pdf">Attention based models in End-to-End ASR</a></p>
+<p>I'll directly jump to explaining the different Attention models available in the <a href="https://github.com/espnet/espnet">ESPnet</a> toolkit.
+(I won't be going into the implementation challenges in getting the Encoder-Decoer Attention models work.)</p>
+<p>Please have a look at the previous post for the basics of Attention models in Speech recognition. This post assumes you know the Attention mechanism in general and build from there.</p>
+<ul>
+<li>No Attention</li>
+<li>Content-based Attention</li>
+<li>Dot product Attention</li>
+<li>Additive Attention</li>
+<li>Location-aware Attention</li>
+<li>Location Aware Attention</li>
+<li>2D Location Aware Attention</li>
+<li>Location Aware Recurrent Attention</li>
+<li>Hybrid Attention</li>
+<li>Coverage Mechanism Attention</li>
+<li>Coverage Mechanism Location Aware Attention</li>
+<li>Multi-Head Attention</li>
+<li>Multi-Head dot product Attention</li>
+<li>Multi-Head additive Attention</li>
+<li>Multi-Head Location Aware Attention</li>
+<li>Multi-Head Multi-Resolution Location Aware Attention</li>
+</ul>
+<h2 id="attention-recap">Attention - Recap</h2>
+<ul>
+<li><span class="arithmatex">\(x = (x_{1}, x_{2}, .........., x_{T})\)</span> - is the input sequence</li>
+<li><span class="arithmatex">\(y = (y_{1}, y_{2}, .........., y_{U})\)</span> - is the target output sequence</li>
+<li><span class="arithmatex">\(h = (h_{1}, h_{2}, .........., h_{T})\)</span> - is the output of the Encoder</li>
+<li><span class="arithmatex">\(h_{t} = f(x_{t}, h_{t-1})\)</span> - is the Encoder function</li>
+<li><span class="arithmatex">\(C_{i} = \sum_{j=1}^{T} \alpha_{i,j} \cdot h_{j}\)</span> - is the Context vector</li>
+<li><span class="arithmatex">\(\alpha_{i,j} = Softmax(e_{i,j}) = \frac{e^{e_{i,j}}}{\sum_{k=1}^{T} e^{e_{i,k}}}\)</span> - are the Attention weights</li>
+<li><span class="arithmatex">\(e_{i,j} = a(s_{i-1}, h_j)\)</span> - is the importance parameter for every encoded input</li>
+<li><span class="arithmatex">\(\sum_{j=1}^{T} e_{i,j} \neq 1\)</span> - the importance parameter need not sum to 1</li>
+<li><span class="arithmatex">\(\sum_{j=1}^{T} \alpha_{i,j} = 1\)</span> - the attention weights sum to 1</li>
+</ul>
+<h2 id="types-of-attention">Types of Attention</h2>
+<p>Broadly, attention mechanisms can be categorized into 3 distinct categories</p>
+<ul>
+<li>Content aware Attention</li>
+<li>Location aware Attention</li>
+<li>Hybrid Attention</li>
+</ul>
+<p>Multi-Head Attention mechanisms are a different beast altogether, we will cross that bridge when we get there. For now, let's concentrate on the 3 broad categories I mentioned.</p>
+<h3 id="no-attention-equal-attention">No Attention (Equal Attention?)</h3>
+<p>Here, no attention is used at all. Each of the <span class="arithmatex">\(h_{i}\)</span> are given equal importance and linearly mixed and averaged to get <span class="arithmatex">\(C_{i}\)</span></p>
+<div class="arithmatex">\[e_{t} = \frac{1}{T}\]</div>
+<div class="arithmatex">\[C_{i} = \sum_{j=1}^{T} \frac{1}{T} h_{j}\]</div>
+<h4 id="no-attention-code"><a href="https://github.com/sknadig/espnet/blob/12d2b8181f6e7b1c9f81b002f6096840e928adbf/espnet/nets/pytorch_backend/attentions.py#L11">No attention - code</a></h4>
+<table class="highlighttable"><tr><th colspan="2" class="filename"><div class="highlight"><span class="filename">Python</span></div></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1">1</a></span>
+<span class="normal"><a href="#__codelineno-0-2">2</a></span>
+<span class="normal"><a href="#__codelineno-0-3">3</a></span>
+<span class="normal"><a href="#__codelineno-0-4">4</a></span>
+<span class="normal"><a href="#__codelineno-0-5">5</a></span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="c1">#Mask = Ones where enc_h is present. Zeros where padding is needed.</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="n">mask</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">make_pad_mask</span><span class="p">(</span><span class="n">enc_hs_len</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="n">att_prev</span> <span class="o">=</span> <span class="n">mask</span> <span class="o">/</span> <span class="n">mask</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">enc_hs_len</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="n">att_prev</span> <span class="o">=</span> <span class="n">att_prev</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">enc_h</span><span class="p">)</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="n">c</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">enc_h</span> <span class="o">*</span> <span class="n">att_prev</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">h_length</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
+</td></tr></table>
+<h4 id="no-attention-full-picture">No attention - full picture</h4>
+<p><center>
+<img src="../../../assets/posts/espnet_attention/noatt.png" alt="Dot product attention" width="800">
+</center></p>
+<h3 id="content-based-attention">Content-based Attention</h3>
+<p>Content-based Attention - as the name suggests is based on the contents of the vector <span class="arithmatex">\(s_{i-1}\)</span> (Decoder hidden state) and <span class="arithmatex">\(h_{t}\)</span> (Annotation vectors from the Encoder). This means, our <strong>compatibility function</strong> or the Attention function depends only on the contents of these vectors, irrespective of their location in the sequence.</p>
+<p>What does this mean?
+Let's say what has been spoken in the utterance is <strong>Barb burned paper and leaves in a big bonfire.</strong> with the phonetic sequence as <strong>sil b aa r sil b er n sil p ey sil p er n l iy v z ih n ah sil b ih sil b aa n f ay er sil</strong>. The feature vector of a phoneme, let's say <strong>b</strong> will be <strong>similar</strong> no matter the location of the phoneme in the sequence <em>sil <strong>b</strong> aa r sil <strong>b</strong> er n sil p ey sil p er n l iy v z ih n ah sil <strong>b</strong> ih sil <strong>b</strong> aa n f ay er sil</em></p>
+<p>This would give equal weight to the same phoneme, but from a different word which is not relevant to the current context. Also, a <strong>phonetically similar</strong> phoneme will get a close score to the actual phoneme.</p>
+<p>Content-based Attention is computed as:</p>
+<div class="arithmatex">\[
+\begin{equation}
+  e_{i,j} = a(h_{j}, s_{i-1})
+\end{equation}
+\]</div>
+<p>Dot product and additive attention are content-based attention mechanisms.</p>
+<h4 id="2-dot-product-attention">2. Dot product Attention</h4>
+<p>In the dot product attention, our similarity measure is the dot product between the vector <span class="arithmatex">\(s_{i-1}\)</span> and <span class="arithmatex">\(h_{t}\)</span>. For generating the Context vector <span class="arithmatex">\(C_{i}\)</span>, we take the Decoder hidden state <span class="arithmatex">\(s_{i-1}\)</span> when generating the previous output symbol <span class="arithmatex">\(y_{i-1}\)</span> and compute the dot product with each <span class="arithmatex">\(h_{t}\)</span> to get <span class="arithmatex">\(e_{i,j}\)</span> for each of the Annotation vectors.</p>
+<p>Conceptually dot product signifies how similar each vectors are (the angle between them). More similar they are, higher the value.</p>
+<p>Here's an image explaining Dot Product Attention</p>
+<p>Here, <strong>dec_z</strong> vector is the Decoder hidden state.</p>
+<p><center>
+<img src="../../../assets/posts/espnet_attention/02_attdot/attdot.gif" alt="Dot product attention" width="800">
+</center></p>
+<p>As we discussed in the <a href="http://sknadig.dev/basics-attention/#before-we-start-with-the-different-attention-models">previous post</a>, these representations are in different dimensions. So, we learn a transformation to transform them to same dimensions so that we can compare them using dot product or addition.
+This transformation is learnt with other parameters using backprop.</p>
+<h4 id="dot-product-attention-code"><a href="https://github.com/sknadig/espnet/blob/12d2b8181f6e7b1c9f81b002f6096840e928adbf/espnet/nets/pytorch_backend/attentions.py#L57">Dot product attention - code</a></h4>
+<table class="highlighttable"><tr><th colspan="2" class="filename"><div class="highlight"><span class="filename">Python</span></div></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-1-1">1</a></span>
+<span class="normal"><a href="#__codelineno-1-2">2</a></span>
+<span class="normal"><a href="#__codelineno-1-3">3</a></span>
+<span class="normal"><a href="#__codelineno-1-4">4</a></span>
+<span class="normal"><a href="#__codelineno-1-5">5</a></span>
+<span class="normal"><a href="#__codelineno-1-6">6</a></span>
+<span class="normal"><a href="#__codelineno-1-7">7</a></span>
+<span class="normal"><a href="#__codelineno-1-8">8</a></span>
+<span class="normal"><a href="#__codelineno-1-9">9</a></span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="n">mlp_enc</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">eprojs</span><span class="p">,</span> <span class="n">att_dim</span><span class="p">)</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="n">mlp_dec</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">dunits</span><span class="p">,</span> <span class="n">att_dim</span><span class="p">)</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="n">pre_compute_enc_h</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">mlp_enc</span><span class="p">(</span><span class="n">enc_h</span><span class="p">))</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="n">e</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pre_compute_enc_h</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">mlp_dec</span><span class="p">(</span><span class="n">dec_z</span><span class="p">))</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">att_dim</span><span class="p">),</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6"></a>    <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7"></a>
+<a id="__codelineno-1-8" name="__codelineno-1-8"></a><span class="n">w</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">scaling</span> <span class="o">*</span> <span class="n">e</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9"></a><span class="n">c</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">enc_h</span> <span class="o">*</span> <span class="n">w</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">h_length</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
+</td></tr></table>
+<h4 id="dot-product-attention-full-picture">Dot product attention - full picture</h4>
+<p><center>
+<img src="../../../assets/posts/espnet_attention/02_attdot/10.png" alt="Dot product attention" width="800">
+</center></p>
+<p>If we are computing the attention weights based on only the contents of the vectors from Decoder and Encoder, similar Annotation vectors get weighed equally irrespective of the position.
+We can see this clearly from the Attention plots from the model. Observe in the following image how the Attention weights are not monotonic and tend to be distributed near positions where the Annotation vectors are similar in the acoustic space.</p>
+<p><center>
+<img src="../../../assets/posts/espnet_attention/02_attdot/att_ws.png" alt="Dot product attention" width="800">
+</center></p>
+<p>We could also plot where the model is attending to for generating each output symbol. Here, I have added an overlay for each row of the first image just to highlight which output symbol is being generated. The actual attention weights look like the above image.</p>
+<p>We could also correlate this with the spectrogram of the utterance, since we know how much sub-sampling was done in the model. I have used a sub-sampling of <strong>1_2_2_1_1</strong>. In our utterance FJSJ0_SX404, if we use a window size of 250ms and a frame shift of 10ms, we get 240 frames of feature vectors. Because of sub-sampling in our model, these features are mapped to 60 feature vectors after the Encoder network.</p>
+<p><center>
+<img src="../../../assets/posts/espnet_attention/02_attdot/att_dot_plots.gif" alt="Dot product attention" width="800">
+</center></p>
+
+              
+            </article>
+          </div>
+        </div>
+        
+          <a href="#" class="md-top md-icon" data-md-component="top" data-md-state="hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"/></svg>
+            Back to top
+          </a>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../tensorflow-dataset/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Tensorflow 2.0 tf.data.Dataset.from_generator" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Tensorflow 2.0 tf.data.Dataset.from_generator
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../basics-attention/" class="md-footer__link md-footer__link--next" aria-label="Next: Introduction to attention models for speech recognition" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Introduction to attention models for speech recognition
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2022 - 2028 Shreekantha A Nadig
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    <a href="https://twitter.com/sk_nadig" target="_blank" rel="noopener" title="sk_nadig on Twitter" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+    </a>
+  
+    
+    
+    <a href="https://github.com/sknadig" target="_blank" rel="noopener" title="sknadig on GitHub" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+    
+    
+    <a href="https://www.linkedin.com/in/sknadig" target="_blank" rel="noopener" title="sknadig on LinkedIn" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"/></svg>
+    </a>
+  
+    
+    
+    <a href="https://www.youtube.com/channel/UCEgoO86BAuL-5FFY01K1N-A" target="_blank" rel="noopener" title="Shree Nadig on YouTube" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.78 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305zm-317.51 213.508V175.185l142.739 81.205-142.739 81.201z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.annotate", "navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "search.suggest", "search.highlight", "search.share", "content.code.annotate"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.22074ed6.min.js"}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.01de222e.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
