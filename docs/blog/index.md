@@ -16,7 +16,7 @@ __2019 Detailed discussion of Attention models for Speech Recognition in ESPnet 
 
 ## [Introduction to attention models for speech recognition]
 
-__2019 Introduction to Attention models and the differences with the Encoder-Decoder framework__
+__2019 Introduction to Attention models and the differences with the Encoder-Attention-Decoder framework__
   [Introduction to attention models for speech recognition]: 2019/basics-attention.md
 
 ## [Encoder-Decoder framework for Speech Recognition]
